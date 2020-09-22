@@ -12,6 +12,7 @@ namespace GADTs
         TResult Visit(PureEffect<T> eff);
         TResult Visit<TOutput>(ImpureEffect<TOutput, T> eff);
     }
+
     public abstract class Effect<T> {
         public abstract TResult Accept<TResult>(IEffectVisitor<T,TResult> v);
     }
@@ -54,12 +55,12 @@ namespace GADTs
         public async Task<T> Interpret<T>(Effect<T> eff)
         {
             var v = new IterativeEffectInterpreterVisitor<T>();
-            var currentEffect = eff;
+            var nextEffect = eff;
             T result;
             do
             {
-                (currentEffect, result) = await currentEffect.Accept(v);
-            } while (currentEffect != null);
+                (nextEffect, result) = await nextEffect.Accept(v);
+            } while (nextEffect != null);
 
             return result;
         }
